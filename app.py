@@ -1,4 +1,5 @@
 import time
+import base64
 from pathlib import Path
 
 import numpy as np
@@ -73,7 +74,18 @@ current_video = video_files[st.session_state.video_idx]
 with left:
     st.subheader("🎬 Live Operations Feed")
     st.write(f"**Now playing:** {current_video.name}")
-    st.video(str(current_video))
+    video_bytes = current_video.read_bytes()
+    video_b64 = base64.b64encode(video_bytes).decode("utf-8")
+    autoplay_attr = "autoplay muted" if autoplay else ""
+    st.markdown(
+        f"""
+        <video controls loop playsinline {autoplay_attr} style="width:100%; border-radius:0.5rem;">
+            <source src="data:video/mp4;base64,{video_b64}" type="video/mp4" />
+            Your browser does not support MP4 playback.
+        </video>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # -----------------------------
 # Right: “Amazing positioning” graph
